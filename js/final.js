@@ -1,13 +1,12 @@
-
-window.requestAnimFrame = (function(){
-  return  window.requestAnimationFrame       || 
-          window.webkitRequestAnimationFrame || 
-          window.mozRequestAnimationFrame    || 
-          window.oRequestAnimationFrame      || 
-          window.msRequestAnimationFrame     || 
-          function(/* function */ callback, /* DOMElement */ element){
+window.requestAnimFrame = (function () {
+    return window.requestAnimationFrame ||
+        window.webkitRequestAnimationFrame ||
+        window.mozRequestAnimationFrame ||
+        window.oRequestAnimationFrame ||
+        window.msRequestAnimationFrame ||
+        function (/* function */ callback, /* DOMElement */ element) {
             window.setTimeout(callback, 1000 / 60);
-          };
+        };
 }());
 
 (function () {
@@ -17,17 +16,21 @@ window.requestAnimFrame = (function(){
         hiScore = localStorage.hiScore || 20,
         leftButton = document.getElementById('leftButton'),
         rightButton = document.getElementById('rightButton'),
-        input = { left: false, right: false }; 
+        input = {left: false, right: false};
 
     canvas.width = 355;
     canvas.height = 530;
 
     // check for keypress and set input properties
-    window.addEventListener('keyup', function(e) {
-       switch (e.keyCode) {
-            case 37: input.left = true; break;                            
-            case 39: input.right = true; break;                            
-       } 
+    window.addEventListener('keyup', function (e) {
+        switch (e.keyCode) {
+            case 37:
+                input.left = true;
+                break;
+            case 39:
+                input.right = true;
+                break;
+        }
     }, false);
 
     //let's assume we're not using a touch capable device
@@ -38,14 +41,15 @@ window.requestAnimFrame = (function(){
         // it seems we do, so we should check for it rather than click
         clickEvent = 'touchend';
 
-    } catch(e) { }
+    } catch (e) {
+    }
 
-    leftButton.addEventListener(clickEvent, function(e) {
+    leftButton.addEventListener(clickEvent, function (e) {
         e.preventDefault();
         input.left = true;
     }, false);
 
-    rightButton.addEventListener(clickEvent, function(e) {
+    rightButton.addEventListener(clickEvent, function (e) {
         e.preventDefault();
         input.right = true;
     }, false);
@@ -54,52 +58,60 @@ window.requestAnimFrame = (function(){
     var draw = {
         clear: function () {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-        },    
+        },
 
         rect: function (x, y, w, h, col) {
             ctx.fillStyle = col;
             ctx.fillRect(x, y, w, h);
         },
-       
+
         circle: function (x, y, radius, col) {
             ctx.fillStyle = col;
             ctx.beginPath();
-            ctx.arc(x, y, radius, 0, Math.PI*2, true);
+            ctx.arc(x, y, radius, 0, Math.PI * 2, true);
             ctx.closePath();
             ctx.fill();
         },
-        
-		triangle: function (x, y, w, h, dir, col) {
-			var angle;
 
-			switch(dir) {
-				case 0: angle =  90; break;		// up
-				case 1: angle =  180; break;	// right
-				case 2: angle =  270; break;	// down
-				case 3: angle =  0; break;		// left
-			}
+        triangle: function (x, y, w, h, dir, col) {
+            var angle;
+
+            switch (dir) {
+                case 0:
+                    angle = 90;
+                    break;		// up
+                case 1:
+                    angle = 180;
+                    break;	// right
+                case 2:
+                    angle = 270;
+                    break;	// down
+                case 3:
+                    angle = 0;
+                    break;		// left
+            }
 
             ctx.fillStyle = col;
             ctx.save();
-            ctx.translate(x + (w/2), y + (h/2));
-            ctx.rotate(angle * Math.PI/180);
+            ctx.translate(x + (w / 2), y + (h / 2));
+            ctx.rotate(angle * Math.PI / 180);
             ctx.beginPath();
-            x = (w /2) * -1;
-            y = (h /2) * -1;
+            x = (w / 2) * -1;
+            y = (h / 2) * -1;
             ctx.moveTo(x, y);
             ctx.lineTo(x, y + h);
-            ctx.lineTo(x + w, y + (h/2));
+            ctx.lineTo(x + w, y + (h / 2));
             ctx.fill();
             ctx.restore();
-		},
+        },
 
-		pattern: function (x, y, w, h){
+        pattern: function (x, y, w, h) {
             ctx.fillStyle = 'rgba(0,0,0,0.2)';
             ctx.beginPath();
-            ctx.moveTo(x, y + (h/2));
-            ctx.lineTo(x + (w /2), y);
-            ctx.lineTo(x + (w /2), y + h);
-            ctx.lineTo(x + w, y + (h/2));
+            ctx.moveTo(x, y + (h / 2));
+            ctx.lineTo(x + (w / 2), y);
+            ctx.lineTo(x + (w / 2), y + h);
+            ctx.lineTo(x + w, y + (h / 2));
             ctx.fill();
         },
 
@@ -117,9 +129,9 @@ window.requestAnimFrame = (function(){
     };
 
     // main snake class
-    var Snake = function() {
+    var Snake = function () {
 
-        this.init = function() {
+        this.init = function () {
 
             this.dead = false;
             this.len = 0; // length of the snake (number of segments)
@@ -138,8 +150,8 @@ window.requestAnimFrame = (function(){
             this.w = this.h = 16;
             this.col = 'darkgreen';
         };
-  
-        this.move = function() {
+
+        this.move = function () {
 
             if (this.dead) {
                 return;
@@ -161,7 +173,7 @@ window.requestAnimFrame = (function(){
             // check if out of bounds
             if (this.x < 0 || this.x > (canvas.width - this.w)
                 || this.y < 0 || this.y > (canvas.height - this.h)) {
-                this.dead = true;    
+                this.dead = true;
             }
 
             // update position
@@ -173,19 +185,19 @@ window.requestAnimFrame = (function(){
 
         };
 
-		this.draw = function () {
+        this.draw = function () {
 
-			var i, offset, segPos, col;
+            var i, offset, segPos, col;
 
             // loop through each segment of the snake, 
             // drawing & checking for collisions
-			for (i = 1; i <= this.len; i += 1) {
+            for (i = 1; i <= this.len; i += 1) {
 
                 // offset calculates the location in the history array
-				offset = i * Math.floor(this.w / this.speed);
-				offset = this.history.length - offset;
-				segPos = this.history[offset];
- 
+                offset = i * Math.floor(this.w / this.speed);
+                offset = this.history.length - offset;
+                segPos = this.history[offset];
+
                 col = this.col;
 
                 // reduce the area we check for collision, to be a bit
@@ -199,20 +211,19 @@ window.requestAnimFrame = (function(){
 
                 if (i === this.len) { // last segment = snake's tail
                     draw.triangle(segPos.x, segPos.y, this.w, this.h,
-										segPos.dir, this.col);
-                }
-                else {
+                        segPos.dir, this.col);
+                } else {
                     draw.rect(segPos.x, segPos.y, this.w, this.h, col);
                     draw.pattern(segPos.x, segPos.y, this.w, this.h);
                 }
-			}
+            }
 
             draw.rect(this.x, this.y, this.w, this.h, this.col); // draw head
-			draw.rect(this.x + 4, this.y + 1, 3, 3, 'white');    // draw eyes	
-			draw.rect(this.x + 12, this.y + 1, 3, 3, 'white');
-		};
+            draw.rect(this.x + 4, this.y + 1, 3, 3, 'white');    // draw eyes
+            draw.rect(this.x + 12, this.y + 1, 3, 3, 'white');
+        };
 
-        this.collides = function(obj) {
+        this.collides = function (obj) {
 
             // this sprite's rectangle
             this.left = this.x;
@@ -227,18 +238,26 @@ window.requestAnimFrame = (function(){
             obj.bottom = obj.y + obj.h;
 
             // determine if not intersecting
-            if (this.bottom < obj.top) { return false; }
-            if (this.top > obj.bottom) { return false; }
-            if (this.right < obj.left) { return false; }
-            if (this.left > obj.right) { return false; }
+            if (this.bottom < obj.top) {
+                return false;
+            }
+            if (this.top > obj.bottom) {
+                return false;
+            }
+            if (this.right < obj.left) {
+                return false;
+            }
+            if (this.left > obj.right) {
+                return false;
+            }
             // otherwise, it's a hit
             return true;
         };
 
     };
 
-    var Apple = function() {
-    
+    var Apple = function () {
+
         this.x = 0;
         this.y = 0;
         this.w = 16;
@@ -247,7 +266,7 @@ window.requestAnimFrame = (function(){
         this.opacity = 1;
         this.replace = 0;   // game turns until we move the apple elsewhere
 
-        this.draw = function() {
+        this.draw = function () {
 
             if (this.replace === 0) { // time to move the apple elsewhere
                 this.relocate();
@@ -257,16 +276,16 @@ window.requestAnimFrame = (function(){
                 ? this.replace / 100
                 : 1;
 
-            draw.circle(this.x + (this.w / 2), this.y + (this.h / 2), 
-                            this.w / 2, 
-                            'rgba(' + this.col + ', ' + this.opacity + ')');
+            draw.circle(this.x + (this.w / 2), this.y + (this.h / 2),
+                this.w / 2,
+                'rgba(' + this.col + ', ' + this.opacity + ')');
             this.replace -= 1;
         };
 
-        this.relocate = function() {
-            this.x = Math.floor(Math.random() * (canvas.width - this.w)); 
-            this.y = Math.floor(Math.random() * (canvas.height -this.h)); 
-            this.replace = Math.floor(Math.random() * 200) + 200; 
+        this.relocate = function () {
+            this.x = Math.floor(Math.random() * (canvas.width - this.w));
+            this.y = Math.floor(Math.random() * (canvas.height - this.h));
+            this.replace = Math.floor(Math.random() * 200) + 200;
         };
 
     };
@@ -276,7 +295,7 @@ window.requestAnimFrame = (function(){
     p1.init();
     // and let there be an apple 
     var apple = new Apple();
-   
+
     (function loop() {
 
         var time, opacity, col;
@@ -298,20 +317,20 @@ window.requestAnimFrame = (function(){
         }
 
         apple.draw();
-        draw.text('Score: '+score, 20, 20, 12, 'black');
-        draw.text('Hi: '+hiScore, 260, 20, 12, 'black');
+        draw.text('Score: ' + score, 20, 20, 12, 'black');
+        draw.text('Hi: ' + hiScore, 260, 20, 12, 'black');
 
         if (p1.dead === true) {
             time = new Date().getTime() * 0.002;
             opacity = Math.abs(Math.sin(time * 0.1));
             col = 'rgba(0, 0, 0, ' + opacity + ')';
-            draw.text('Game Over',100, 200, 20, col); 
+            draw.text('Game Over', 100, 200, 20, col);
 
             if (input.right || input.left) {
                 p1.init();
                 score = 0;
-            } 
-        } 
+            }
+        }
 
         input.right = input.left = false;
         requestAnimFrame(loop);
