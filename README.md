@@ -7,10 +7,10 @@ In the game of Snake, the player moves the  "snake" around the board. As the sna
 
 
 ## Application Deployment
-Open Adobe PhoneGap Build [https://build.phonegap.com/apps]
-Upload the source code in form of a zip file.
-Build
-Download the Android and Windows Application
+* Open Adobe PhoneGap Build [https://build.phonegap.com/apps]
+* Upload the source code in form of a zip file.
+* Build
+* Download the Android and Windows Application
 
 ## Instruction
 ### What is the goal of the game?
